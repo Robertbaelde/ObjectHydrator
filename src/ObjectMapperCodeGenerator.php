@@ -289,7 +289,7 @@ CODE;
                 \$$casterName = new \\$caster(...$casterOptions);
             }
 
-            \$value = \${$casterName}->cast(\$value, \$this);
+            \$value = \${$casterName}->cast(\$value, \$this, '$definition->firstTypeName');
 CODE;
                 }
             }

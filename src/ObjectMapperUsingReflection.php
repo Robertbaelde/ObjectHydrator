@@ -98,11 +98,13 @@ class ObjectMapperUsingReflection implements ObjectMapper
                 $property = $definition->accessorName;
                 $value = $this->extractPayloadViaMap($payload, $keys);
 
+                $typeName = $definition->firstTypeName;
+
                 foreach ($definition->casters as [$caster, $options]) {
                     $key = $className . '-' . $caster . '-' . json_encode($options);
                     /** @var PropertyCaster $propertyCaster */
                     $propertyCaster = $this->casterInstances[$key] ??= new $caster(...$options);
-                    $value = $propertyCaster->cast($value, $this);
+                    $value = $propertyCaster->cast($value, $this, $typeName);
                 }
 
                 if ($value === null) {
@@ -119,8 +121,6 @@ class ObjectMapperUsingReflection implements ObjectMapper
                 if ($definition->typeKey && is_array($value)) {
                     $value = $this->hydrateViaTypeMap($definition, $value);
                 }
-
-                $typeName = $definition->firstTypeName;
 
                 if ($definition->isBackedEnum() && !is_array($value)) {
                     $value = $typeName::from($value);
